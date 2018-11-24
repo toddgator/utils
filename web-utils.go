@@ -1,18 +1,18 @@
 package utils
 
 import (
-	"fmt"
 	"github.com/dustin/go-humanize"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strings"
 )
 
-// DownloadFileWithCounter will download a url to a local file. It's efficient because it will
+// DownloadLargeFileWithCounter will download a url to a local file. It's efficient because it will
 // write as it downloads and not load the whole file into memory. We pass an io.TeeReader
 // into Copy() to report progress on the download.
-func DownloadFileWithCounter(filepath string, url string) error {
+func DownloadLargeFileWithCounter(filepath string, url string) error {
 
 	// Create the file, but give it a tmp file extension, this means we won't overwrite a
 	// file until it's downloaded, but we'll remove the tmp extension once downloaded.
@@ -37,7 +37,7 @@ func DownloadFileWithCounter(filepath string, url string) error {
 	}
 
 	// The progress use the same line so print a new line once it's finished downloading
-	fmt.Print("\n")
+	log.Print("\n")
 
 	err = os.Rename(filepath+".tmp", filepath)
 	if err != nil {
@@ -50,11 +50,11 @@ func DownloadFileWithCounter(filepath string, url string) error {
 func (wc WriteCounter) PrintProgress() {
 	// Clear the line by using a character return to go back to the start and remove
 	// the remaining characters by filling it with spaces
-	fmt.Printf("\r%s", strings.Repeat(" ", 35))
+	log.Printf("\r%s", strings.Repeat(" ", 35))
 
 	// Return again and print current status of download
 	// We use the humanize package to print the bytes in a meaningful way (e.g. 10 MB)
-	fmt.Printf("\rDownloading... %s complete", humanize.Bytes(wc.Total))
+	log.Printf("\rDownloading... %s complete", humanize.Bytes(wc.Total))
 }
 
 // WriteCounter counts the number of bytes written to it. It implements to the io.Writer
